@@ -8,6 +8,7 @@ def do_add(env, args):
     return left + right
 
 # [call]
+"""
 def do_call(env, args):
     # Set up the call.
     assert len(args) >= 1
@@ -27,7 +28,35 @@ def do_call(env, args):
 
     # Report.
     return result
-# [/call]
+# [/call]"""
+#Old call function without loop ^^^
+
+
+#New call function with loop vvv
+def do_call(env, args):
+    # Set up the call.
+    assert len(args) >= 1
+    name = args[0]
+    values = [do(env, a) for a in args[1:]]
+
+    # Find the function.
+    func = env_get(env, name)
+    assert isinstance(func, list) and (func[0] == "func")
+    params, body = func[1], func[2]
+    assert len(values) == len(params)
+
+    # Run in new environment.
+    new_env = {}  # Create a new empty dictionary for the new environment.
+    for param, value in zip(params, values):  # Loop through each parameter name and value.
+        new_env[param] = value  # Insert the parameter name and value into the dictionary.
+    env.append(new_env)  # Append the new environment dictionary to the environment list.
+
+    result = do(env, body)
+    env.pop()
+
+    # Report.
+    return result
+
 
 def do_comment(env, args):
     return None
